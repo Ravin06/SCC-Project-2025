@@ -1,0 +1,130 @@
+import smtplib
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from faker import Faker
+import requests
+from bs4 import BeautifulSoup
+from fake_useragent import UserAgent
+
+fake = Faker()
+ua = UserAgent()
+
+def generate_dynamic_email_content(personality="formal"):
+    """
+    Simulate dynamic phishing email content based on the chosen personality.
+    personality: Can be "formal", "friendly", "urgent", "casual", "suspicious", etc.
+    """
+
+    # Predefined mock responses based on the personality type (TO BE REPLACED BY GEMINI)
+    email_templates = {
+        "formal": "Dear {name},\n\nWe have detected unusual activity in your account. Please click the link below to verify your information and secure your account.\n\n[Fake Link]\n\nThank you for your attention to this matter.\n\nBest regards,\nYour Trusted Service Provider.",
+        "friendly": "Hey {name}!\n\nWe noticed some unusual activity in your account. Don't worry, it's all good! Just click the link below to verify your info and everything will be back to normal.\n\n[Fake Link]\n\nTake care and stay safe!\n\nCheers,\nYour Friendly Team.",
+        "urgent": "URGENT: Your account has been compromised!\n\nWe need you to act fast to prevent unauthorized access to your account. Please click the link below and verify your details immediately.\n\n[Fake Link]\n\nThis is an emergency!\n\nSincerely,\nSecurity Team.",
+        "casual": "Hey, quick heads up {name}!\n\nWe just wanted to check in about some weird activity in your account. If you didn't do it, please click the link below to make sure everything's cool.\n\n[Fake Link]\n\nThanks,\nThe Team.",
+        "suspicious": "We detected suspicious activity in your account.\n\nPlease click the link below to verify your information and prevent any unauthorized access.\n\n[Fake Link]\n\nDon't ignore this message!\n\nBest,\nAccount Security Team."
+    }
+
+    return email_templates.get(personality, "Error: Invalid personality")
+
+def perform_osint_scraping(name):
+    """
+    Perform basic OSINT scraping by searching for the person's name on Google
+    and extracting publicly available information like social media links, occupation, etc.
+    """
+    search_query = f"{name} site:linkedin.com OR site:twitter.com OR site:github.com"
+    headers = {
+        'User-Agent': ua.random
+    }
+
+    google_url = f"https://www.google.com/search?q={search_query}"
+    response = requests.get(google_url, headers=headers)
+
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.text, 'html.parser')
+        result_links = soup.find_all('a', href=True)
+
+        social_media_links = []
+        for link in result_links:
+            href = link['href']
+            if 'linkedin.com/in' in href:
+                social_media_links.append({'platform': 'LinkedIn', 'url': href})
+            elif 'twitter.com' in href:
+                social_media_links.append({'platform': 'Twitter', 'url': href})
+            elif 'github.com' in href:
+                social_media_links.append({'platform': 'GitHub', 'url': href})
+
+        snippets = soup.find_all('div', {'class': 'BNeawe iBp4i AP7Wnd'})
+        occupation = None
+        company = None
+        for snippet in snippets:
+            text = snippet.get_text()
+            if "Software Engineer" in text:
+                occupation = "Software Engineer"
+            if "Tech Company" in text:
+                company = "Tech Company"
+
+        return {
+            'occupation': occupation or 'Not found',
+            'company': company or 'Not found',
+            'social_media': social_media_links
+        }
+
+    else:
+        print(f"Error fetching data from Google. Status Code: {response.status_code}")
+        return {}
+
+def send_spoofed_email(target_email, subject, body, from_email, from_password, spoofed_from):
+    msg = MIMEMultipart()
+    msg['From'] = spoofed_from
+    msg['To'] = target_email
+    msg['Subject'] = subject
+    msg.attach(MIMEText(body, 'html'))
+
+    try:
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()
+        server.login(from_email, from_password)
+        
+        text = msg.as_string()
+        server.sendmail(from_email, target_email, text)
+        server.quit()
+        print(f"Email sent to {target_email} successfully! (Spoofed From: {spoofed_from})")
+    except Exception as e:
+        print(f"Error sending email to {target_email}: {e}")
+
+def generate_random_sender():
+    random_name = fake.name()
+    random_email = fake.email()
+    return random_email
+
+# Main function to execute the tool
+def main():
+    target_name = input("Enter the target's name: ")
+    target_email = input("Enter the target's email: ")
+    from_email = input("Enter your real email (used for SMTP login): ")
+    from_password = input("Enter your email password: ")
+    personality = input("Enter personality type (formal, friendly, urgent, casual, suspicious): ").lower()
+
+    # Perform OSINT lookup for the target's name (doesnt work yet)
+    osint_results = perform_osint_scraping(target_name)
+
+    print(f"\nOSINT Results for {target_name}:")
+    print(f"Occupation: {osint_results.get('occupation', 'Not available')}")
+    print(f"Company: {osint_results.get('company', 'Not available')}")
+    print("Social Media Links:")
+    for social in osint_results.get('social_media', []):
+        print(f"- {social['platform']}: {social['url']}")
+
+    spoofed_from = generate_random_sender()
+    # Generate dynamic phishing content based on personality
+    phishing_body = generate_dynamic_email_content(personality).format(name=target_name)
+    # Customize phishing email content with OSINT data
+    phishing_body = phishing_body.replace("[Fake Link]", osint_results['social_media'][0]['url'] if osint_results['social_media'] else "[Fake Link]")
+    # Generate phishing subject
+    # TODO: make this dynamic based on gemini
+    phishing_subject = f"Urgent: Account Verification Needed - {osint_results['company']}"
+    send_spoofed_email(target_email, phishing_subject, phishing_body, from_email, from_password, spoofed_from) #sends mail, spoofing doesnt work either i think
+
+if __name__ == "__main__":
+    print("Starting Phishing Tool...\n")
+    main()
