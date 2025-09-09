@@ -1,4 +1,7 @@
+from dotenv import load_dotenv
+import os
 import smtplib
+import google.generativeai as genai
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from faker import Faker
@@ -6,16 +9,23 @@ import requests
 from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
 
+load_dotenv()
+api_key = os.getenv("GEMINI_KEY")
+if not api_key:
+    raise RuntimeError("GEMINI_KEY environment variable not set")
+genai.configure(api_key=api_key)
+
 fake = Faker()
 ua = UserAgent()
 
-def generate_dynamic_email_content(personality="formal"):
+def generate_dynamic_email_content(name, personality="formal"):
     """
     Simulate dynamic phishing email content based on the chosen personality.
     personality: Can be "formal", "friendly", "urgent", "casual", "suspicious", etc.
     """
 
-    # Predefined mock responses based on the personality type (TO BE REPLACED BY GEMINI)
+    # Predefined mock responses based on the personality type (Commented out in case)
+    """
     email_templates = {
         "formal": "Dear {name},\n\nWe have detected unusual activity in your account. Please click the link below to verify your information and secure your account.\n\n[Fake Link]\n\nThank you for your attention to this matter.\n\nBest regards,\nYour Trusted Service Provider.",
         "friendly": "Hey {name}!\n\nWe noticed some unusual activity in your account. Don't worry, it's all good! Just click the link below to verify your info and everything will be back to normal.\n\n[Fake Link]\n\nTake care and stay safe!\n\nCheers,\nYour Friendly Team.",
@@ -23,8 +33,30 @@ def generate_dynamic_email_content(personality="formal"):
         "casual": "Hey, quick heads up {name}!\n\nWe just wanted to check in about some weird activity in your account. If you didn't do it, please click the link below to make sure everything's cool.\n\n[Fake Link]\n\nThanks,\nThe Team.",
         "suspicious": "We detected suspicious activity in your account.\n\nPlease click the link below to verify your information and prevent any unauthorized access.\n\n[Fake Link]\n\nDon't ignore this message!\n\nBest,\nAccount Security Team."
     }
+    """
 
-    return email_templates.get(personality, "Error: Invalid personality")
+    prompt = f"""
+    Write ONE {personality} notification email addressed to {name}.
+    Return it ONLY in this format:
+
+    <email body here, including a fake link [Fake Link]>
+
+    Do not include multiple options, explanations, or notes.
+    Do NOT include a subject line.
+    Do not include BODY: or subject tags, just the email body.
+    Start directly with the greeting (e.g., 'Hi {name},').
+    Return ONLY the email body, nothing else
+    The email should sound like a professional company message,
+    If the email is to be formal, include a greeting and a sign-off,
+    If the email is to be friendly, include casual language,
+    If the email is to be urgent, emphasize the need for immediate action,
+    If the email is to be casual, use informal language,
+    If the email is to be suspicious, make it sound like a warning.
+    """
+
+    model = genai.GenerativeModel("gemini-2.0-flash")
+    response = model.generate_content(prompt)
+    return response.text.strip()
 
 def perform_osint_scraping(name):
     """
@@ -117,7 +149,7 @@ def main():
 
     spoofed_from = generate_random_sender()
     # Generate dynamic phishing content based on personality
-    phishing_body = generate_dynamic_email_content(personality).format(name=target_name)
+    phishing_body = generate_dynamic_email_content(target_name, personality)
     # Customize phishing email content with OSINT data
     phishing_body = phishing_body.replace("[Fake Link]", osint_results['social_media'][0]['url'] if osint_results['social_media'] else "[Fake Link]")
     # Generate phishing subject
