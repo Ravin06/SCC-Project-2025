@@ -1,0 +1,4 @@
+faker
+BeautifulSoup4
+fake_useragent
+requests
