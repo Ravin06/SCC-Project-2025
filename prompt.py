@@ -18,13 +18,12 @@ email_prompt = """
 Write ONE {personality} notification email addressed to {name}.
 Return it ONLY in this format:
 
+<subject>: <subject line here, make sure the subject line itself is separated with a space>
+
 <email body here, including a fake link [Fake Link]>
 
 Do not include multiple options, explanations, or notes.
-Do NOT include a subject line.
-Do not include BODY: or subject tags, just the email body.
 Start directly with the greeting (e.g., 'Hi {name},').
-Return ONLY the email body, nothing else
 The email should sound like a professional company message,
 If the email is to be formal, include a greeting and a sign-off,
 If the email is to be friendly, include casual language,

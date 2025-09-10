@@ -1,5 +1,7 @@
+from urllib import response
 from dotenv import load_dotenv
 import os
+import re
 import smtplib
 import google.generativeai as genai
 from email.mime.multipart import MIMEMultipart
@@ -22,8 +24,13 @@ ua = UserAgent()
 def generate_dynamic_email_content(name, personality="formal"):
     prompt = email_prompt.format(name=name, personality=personality)
     model = genai.GenerativeModel("gemini-2.0-flash")
+    global subject
     response = model.generate_content(prompt)
-    return response.text.strip()
+    subject = response.text.strip()
+    body = response.text.strip()
+    body_update = re.sub(r"(?:<subject>|subject|phishing subject)\s*:\s*[^\n\r]+", "", body, flags=re.IGNORECASE).strip()
+    print(f"\nGenerated Email Content:\n{body}\n")
+    return body_update
 
 def perform_osint_scraping(name):
     """
@@ -121,7 +128,13 @@ def main():
     phishing_body = phishing_body.replace("[Fake Link]", osint_results['social_media'][0]['url'] if osint_results['social_media'] else "[Fake Link]")
     # Generate phishing subject
     # TODO: make this dynamic based on gemini
-    phishing_subject = f"Urgent: Account Verification Needed - {osint_results['company']}"
+    # phishing_subject = f"Urgent: Account Verification Needed - {osint_results['company']}"
+    # regex to capture subject line (case-insensitive, ignores spaces)
+    match = re.search(r"(?:<subject>|subject|phishing subject)\s*:\s*(.+)", 
+        subject, re.IGNORECASE)
+    print(f"Regex Match: {match}")
+    phishing_subject = match.group(1).strip() if match else None
+    print(f"Phishing Subject: {phishing_subject}")
     send_spoofed_email(target_email, phishing_subject, phishing_body, from_email, from_password, spoofed_from) #sends mail, spoofing doesnt work either i think
 
 if __name__ == "__main__":
