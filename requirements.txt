@@ -4,3 +4,4 @@ fake_useragent
 requests
 google.generativeai
 python-dotenv
+ghunt
