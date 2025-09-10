@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
 import os
+import csv
 import smtplib
 import google.generativeai as genai
 from email.mime.multipart import MIMEMultipart
@@ -22,6 +23,23 @@ genai.configure(api_key=api_key)
 
 fake = Faker()
 ua = UserAgent()
+
+with open("database.csv", "r") as csvfile:
+    reader = csv.reader(csvfile)
+    for row in reader:
+        print(row) 
+
+# For writing/updating to CSV later
+# with open("database.csv", "w", newline="") as csvfile:
+#     writer = csv.writer(csvfile)
+#     writer.writerows(data)
+#
+# For reading from CSV later
+# with open("database.csv", "r") as csvfile:
+#     reader = csv.reader(csvfile)
+#     for row in reader:
+#         print(row)
+
 
 def generate_dynamic_email_content(name, personality="formal", osint_results={}):
     # First, try to generate an HTML email
