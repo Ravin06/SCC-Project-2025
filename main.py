@@ -24,23 +24,6 @@ genai.configure(api_key=api_key)
 fake = Faker()
 ua = UserAgent()
 
-with open("database.csv", "r") as csvfile:
-    reader = csv.reader(csvfile)
-    for row in reader:
-        print(row) 
-
-# For writing/updating to CSV later
-# with open("database.csv", "w", newline="") as csvfile:
-#     writer = csv.writer(csvfile)
-#     writer.writerows(data)
-#
-# For reading from CSV later
-# with open("database.csv", "r") as csvfile:
-#     reader = csv.reader(csvfile)
-#     for row in reader:
-#         print(row)
-
-
 def generate_dynamic_email_content(name, personality="formal", osint_results={}):
     # First, try to generate an HTML email
     html_prompt = email_prompt.format(
@@ -86,14 +69,18 @@ def generate_dynamic_email_content(name, personality="formal", osint_results={})
         # If fallback also fails, return a default email.
         return "Urgent: Account Verification Needed", f"""Dear {name},
 
-We have detected some unusual activity on your account. Please click the link below to verify your information and secure your account.
+We have detected unusual activity on your account that requires immediate attention. To prevent potential unauthorized access, please verify your account details as soon as possible.
 
-[Fake Link]
+Failure to verify your account within 24 hours may result in temporary suspension.
+
+Click here to verify your account immediately: [Fake Link]
 
 Thank you for your attention to this matter.
 
 Best regards,
-Your Trusted Service Provider."""
+Your Trusted Service Provider.
+
+This is an automated message, please do not reply. Report Scam"""
 
 def perform_osint_scraping(name, email):
     """
@@ -101,7 +88,7 @@ def perform_osint_scraping(name, email):
     and extracting publicly available information like social media links, occupation, etc.
     """
     domain = email.split('@')[1]
-    search_query = f'\"_name_\" {domain}'
+    search_query = f'"_name_" {domain}'
     headers = {
         'User-Agent': ua.random
     }
@@ -163,9 +150,10 @@ def send_spoofed_email(target_email, subject, body, from_email, from_password, s
     except Exception as e:
         print(f"Error sending email to {target_email}: {e}")
 
-def generate_random_sender():
+def generate_random_sender(from_email_address):
     random_name = fake.name()
-    random_email = fake.email()
+    domain = from_email_address.split('@')[1]
+    random_email = f"{random_name.replace(' ', '.').lower()}@{domain}"
     return random_name, random_email
 
 def perform_ghunt_osint(email):
@@ -191,21 +179,14 @@ def extract_name_from_ghunt(ghunt_output):
             return line.split("Name:")[1].strip()
     return None
 
-def main():
-    target_email = input("Enter the target's email: ")
-    #to be removed later, save the email and password in .env file
-    from_email = input("Enter your real email (used for SMTP login): ")
-    from_password = input("Enter your email password: ")
-    #continue from here
-    personality = input("Enter personality type (formal, friendly, urgent, casual, suspicious): ").lower()
-
+def process_email(target_email, from_email, from_password, personality):
     # Perform ghunt OSINT on the email
     ghunt_results = perform_ghunt_osint(target_email)
     target_name = extract_name_from_ghunt(ghunt_results)
 
     if not target_name:
         print("Could not extract name from ghunt output. Please enter the name manually.")
-        target_name = input("Enter the target's name: ")
+        target_name = input(f"Enter the target's name for {target_email}: ")
 
     # Perform OSINT lookup for the target's name
     osint_results = perform_osint_scraping(target_name, target_email)
@@ -220,12 +201,36 @@ def main():
     print("\nGHunt OSINT Results:")
     print(ghunt_results)
 
-    spoofed_name, spoofed_email = generate_random_sender()
+    spoofed_name, spoofed_email = generate_random_sender(from_email)
     # Generate dynamic phishing content based on personality
     phishing_subject, phishing_body = generate_dynamic_email_content(target_name, personality, osint_results)
-    phishing_body = phishing_body.replace("[Fake Link]", "<a href=\"https://www.youtube.com/watch?v=dQw4w9WgXcQ\">Click here to verify</a>")
+    phishing_body = phishing_body.replace("[Fake Link]", "https://www.youtube.com/watch?v=dQw4w9WgXcQ")
     
     send_spoofed_email(target_email, phishing_subject, phishing_body, from_email, from_password, spoofed_name, spoofed_email)
+
+def main():
+    from_email = input("Enter your real email (used as sender for SMTP): ")
+    from_password = input("Enter your email password (or app-specific password for Gmail): ")
+    personality = input("Enter personality type (formal, friendly, urgent, casual, suspicious): ").lower()
+
+    choice = input("Choose input method (1 for single email, 2 for database.csv): ")
+
+    if choice == '1':
+        target_email = input("Enter the target's email: ")
+        process_email(target_email, from_email, from_password, personality)
+    elif choice == '2':
+        try:
+            with open("database.csv", "r") as csvfile:
+                reader = csv.reader(csvfile)
+                for row in reader:
+                    if row: # handle empty rows
+                        target_email = row[0] # Assuming email is in the first column
+                        print(f"\nProcessing email from database: {target_email}")
+                        process_email(target_email, from_email, from_password, personality)
+        except FileNotFoundError:
+            print("Error: database.csv not found.")
+    else:
+        print("Invalid choice. Please enter 1 or 2.")
 
 if __name__ == "__main__":
     print("Starting Phishing Tool...\n")
