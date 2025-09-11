@@ -28,13 +28,12 @@ Return a JSON object with two keys: "subject" and "body".
 - The "body" should be a complete, well-formatted HTML email with inline CSS.
 
 **Email Body Requirements:
+- Ensure all generated HTML is well-formed, parsable, and uses inline CSS for styling. All links should be functional and correctly formatted.
 - A professional header and footer.
 - A personalized greeting to {name}.
 - A clear and concise message with a {personality} tone.
-- Three call to actions with hyperlinks to "[Fake Link]".
-    1. A text link that says "Click here to verify".
-    2. A button that says "Click here if you think this is a phishing link".
-    3. A text link in the footer that says "Report Scam".
+- A call to action with a valid HTML hyperlink to "[Fake Link]" (e.g., `<a href="[Fake Link]" style="...">Click here to verify</a>`).
+- The email body should end with "This is an automated message. Please do not reply. <a href="[Fake Link]" style="text-decoration: underline;">Report Scam</a>" in a subtle, smaller font, possibly greyed out.
 
 **Example JSON Output:
 ```json
