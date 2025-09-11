@@ -1,4 +1,5 @@
 # Phishing Tool - SCC Project 2025
+by: Ravin, Royston, Zhang Di, Charmine, Yu Kai
 ## Overview
 This phishing tool is designed to generate and send spoofed emails based on Open-Source Intelligence (OSINT) results. It uses several tools such as GHunt, Holehe, Toutatis, Sherlock, and fakedata to gather information about the target and create dynamic phishing emails. The tool leverages Google's Generative AI (Gemini) to dynamically generate email content.
 
