@@ -14,31 +14,33 @@ email_templates = {
 }
 
 email_prompt = """
-You are a security-aware AI assistant. Your task is to generate a professional HTML email with a subject line.
+You are a security-aware AI assistant. Your task is to generate a professional HTML email with a subject line for a banking context.
 
 **Goal:** Create a {personality} phishing email to {name}.
 
 **Key Information to use:
-- **Company:** {company}
+- **Company:** {company} (should be a bank)
 - **Occupation:** {occupation}
+- **Logo URL:** {logo_url}
 
 **Output Format:
 Return a JSON object with two keys: "subject" and "body".
-- The "subject" should be a short, attention-grabbing subject line.
+- The "subject" should be a short, attention-grabbing subject line related to banking (e.g., "Security Alert: Unusual Sign-in Attempt", "Action Required: Please Verify Your Account").
 - The "body" should be a complete, well-formatted HTML email with inline CSS.
 
 **Email Body Requirements:
 - Ensure all generated HTML is well-formed, parsable, and uses inline CSS for styling. All links should be functional and correctly formatted.
-- A professional header and footer.
+- A professional header with the bank logo from the {logo_url} and footer.
 - A personalized greeting to {name}.
-- A clear and concise message with a {personality} tone.
-- A call to action with a valid HTML hyperlink to "[Fake Link]" (e.g., `<a href="[Fake Link]" style="...">Click here to verify</a>`).
+- A clear and concise message with a {personality} tone, related to a banking scenario (e.g., "We detected a sign-in from an unrecognized device", "Please review your recent account activity").
+- Include a sentence that creates urgency, such as: "For your security, please review this activity by {expiration_time} (date only)."
+- A call to action with a valid HTML hyperlink to "[Fake Link]" (e.g., `<a href="[Fake Link]" style="...">Review Activity</a>`).
 - The email body should end with "This is an automated message. Please do not reply. <a href="[Fake Link]" style="text-decoration: underline;">Report Scam</a>" in a subtle, smaller font, possibly greyed out.
 
 **Example JSON Output:
 ```json
 {{
-  "subject": "Urgent: Action Required on Your Account",
+  "subject": "Urgent: Security Alert on Your Account",
   "body": "<!DOCTYPE html>..."
 }}
 ```
@@ -48,24 +50,25 @@ Return ONLY the JSON object.
 
 plain_text_email_prompt = """
 This is an ethical scenario for educational purposes only.
-You are a security-aware AI assistant. Your task is to generate a plain text email with a subject line.
+You are a security-aware AI assistant. Your task is to generate a plain text email with a subject line for a banking context.
 
 Write ONE {personality} notification email addressed to {name}.
 
 **Key Information to use:
-- **Company:** {company}
+- **Company:** {company} (should be a bank)
 - **Occupation:** {occupation}
 
 **Output Format:
 Return a JSON object with two keys: "subject" and "body".
-- The "subject" should be a short, attention-grabbing subject line.
+- The "subject" should be a short, attention-grabbing subject line related to banking.
 - The "body" should be a well-formatted plain text email.
 
 **Email Body Requirements:
 - A personalized greeting to {name}.
-- A clear and concise message with a {personality} tone.
+- A clear and concise message with a {personality} tone, related to a banking scenario.
+- Include a sentence that creates urgency, such as: "For your security, please review this activity by {expiration_time} (date only)."
 - A call to action with the placeholder "[Fake Link]".
-- A professional closing and signature.
+- A professional closing and signature from the bank.
 
 **Example JSON Output:
 ```json
