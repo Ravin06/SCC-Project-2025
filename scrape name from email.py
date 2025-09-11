@@ -23,4 +23,5 @@ with open("database.csv", "r", newline="") as infile:
 
 with open("database.csv", "w", newline="") as outfile:
     writer = csv.writer(outfile)
+    writer.writerow(["Email","Name"])
     writer.writerows(rows)
