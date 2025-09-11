@@ -13,7 +13,11 @@ with open("database.csv", "r", newline="") as infile:
     for row in reader:
         if not row:
             continue
+        
         email = row[0].strip()
+        if email == "Email":
+            print("Valid database! Writing...")
+            continue
         name = row[1].strip() if len(row) > 1 and row[1] else extract_name_from_email(email)
         rows.append([email, name])
 
