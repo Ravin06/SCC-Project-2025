@@ -6,8 +6,8 @@ import urllib.parse
 API_KEY = "a6c7ba97f266a40363d388caed4f5b793cdafb24cecb42daabcf603b81df3726"
 
 # Email + usernames
-email = "johndoe577@gmail.com"
-email = "johndoe577@gmail.com"
+email = "mark.zuckerberg@gmail.com"
+
 
 # Extract the part before @
 prefix = email.split("@")[0]
