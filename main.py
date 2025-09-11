@@ -24,6 +24,22 @@ genai.configure(api_key=api_key)
 fake = Faker()
 ua = UserAgent()
 
+with open("database.csv", "r") as csvfile:
+    reader = csv.reader(csvfile)
+    for row in reader:
+        print(row) 
+
+# For writing/updating to CSV later
+# with open("database.csv", "w", newline="") as csvfile:
+#     writer = csv.writer(csvfile)
+#     writer.writerows(data)
+#
+# For reading from CSV later
+# with open("database.csv", "r") as csvfile:
+#     reader = csv.reader(csvfile)
+#     for row in reader:
+#         print(row)
+
 def generate_dynamic_email_content(name, personality="formal", osint_results={}):
     # First, try to generate an HTML email
     html_prompt = email_prompt.format(
@@ -209,6 +225,11 @@ def process_email(target_email, from_email, from_password, personality):
     send_spoofed_email(target_email, phishing_subject, phishing_body, from_email, from_password, spoofed_name, spoofed_email)
 
 def main():
+    # with open("database.csv", "r") as csvfile:
+    #     reader = csv.reader(csvfile)
+    #     for row in reader:
+    #         target_name = row[0]
+    #         target_email = row[1]
     from_email = input("Enter your real email (used as sender for SMTP): ")
     from_password = input("Enter your email password (or app-specific password for Gmail): ")
     personality = input("Enter personality type (formal, friendly, urgent, casual, suspicious): ").lower()
