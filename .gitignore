@@ -3,4 +3,3 @@ venv
 .env
 .env.local
 __pycache__/
-database.csv
