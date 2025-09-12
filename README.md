@@ -99,7 +99,7 @@ The tool will:
 Feel free to contribute to this project! If you have ideas or improvements, open an issue or submit a pull request. Please make sure to follow the coding style and include tests where applicable.
 ### Future Development (ill do it when i get time maybe)
 - SMS and Voice Phishing after phone number OSINT
-- Possible commercial GUI (https://studio.firebase.google.com/studio-9890097031)
+- Possible commercial GUI (https://studio.firebase.google.com/studio-9890097031)  
 and more!
 
 ## Disclaimer
