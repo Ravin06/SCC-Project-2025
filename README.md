@@ -97,6 +97,10 @@ The tool will:
 
 ## Contributing
 Feel free to contribute to this project! If you have ideas or improvements, open an issue or submit a pull request. Please make sure to follow the coding style and include tests where applicable.
+### Future Development (ill do it when i get time maybe)
+- SMS and Voice Phishing after phone number OSINT
+- Possible commercial GUI (https://studio.firebase.google.com/studio-9890097031)
+and more!
 
 ## Disclaimer
 This tool is for educational purposes only. The usage of phishing techniques without proper authorization is illegal and unethical. Ensure you have explicit consent before conducting any form of penetration testing or phishing campaigns. Misuse of this tool may lead to legal consequences. Always comply with ethical guidelines and local laws.
