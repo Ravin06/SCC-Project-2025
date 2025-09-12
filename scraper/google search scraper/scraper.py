@@ -3,7 +3,7 @@ import os
 import json
 import urllib.parse
 
-API_KEY = "a6c7ba97f266a40363d388caed4f5b793cdafb24cecb42daabcf603b81df3726"
+API_KEY = ""
 
 # Email + usernames
 email = "mark.zuckerberg@gmail.com"
@@ -78,5 +78,6 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 output_path = os.path.join(script_dir, "osint_results.json")
 with open(output_path, "w", encoding="utf-8") as f:
     json.dump(all_results, f, indent=2)
+
 
 print(f"Results saved: {len(all_results)} profiles found.")
