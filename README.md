@@ -1,7 +1,15 @@
-# Phishing Tool - SCC Project 2025
-by: Ravin, Royston, Zhang Di, Charmine, Yu Kai
+# Automated Phishing Tool - SCC Project 2025
+by: Ravin, Royston, Zhang Di, Charmine, Yu Kai  
+![output](https://github.com/user-attachments/assets/7b0a312d-7a4d-4c14-90e0-c368f7d7b059)
+
 ## Overview
-This phishing tool is designed to generate and send spoofed emails based on Open-Source Intelligence (OSINT) results. It uses several tools such as GHunt, Holehe, Toutatis, Sherlock, and fakedata to gather information about the target and create dynamic phishing emails. The tool leverages Google's Generative AI (Gemini) to dynamically generate email content.
+This phishing tool is designed to generate and send spoofed emails based on Open-Source Intelligence (OSINT) results. It uses several tools such as GHunt, Holehe, Toutatis, Sherlock, and fakedata to gather information about the target and create dynamic phishing emails. The tool leverages Google's Generative AI (Gemini) to dynamically generate email content.  
+
+<img src="https://github.com/user-attachments/assets/ae8222b5-7440-4f5d-b6de-2e645cb9a3db" width="19%"></img>
+<img src="https://github.com/user-attachments/assets/0c1dec8e-53c9-4435-9207-1f528d23d7fb" width="19%"></img>
+<img src="https://github.com/user-attachments/assets/f02b80de-f684-4b1f-9411-167fc082b025" width="19%"></img>
+<img src="https://github.com/user-attachments/assets/4a1dbfcf-f139-4200-9a36-3e1063ca5a8e" width="19%"></img>
+<img src="https://github.com/user-attachments/assets/61e0443a-dfe5-49b0-a7b9-a02098e01102" width="19%"></img>
 
 ## Features
 - OSINT Scraping: Collects publicly available information about the target, such as occupation, company, and social media profiles.
@@ -99,7 +107,9 @@ The tool will:
 Feel free to contribute to this project! If you have ideas or improvements, open an issue or submit a pull request. Please make sure to follow the coding style and include tests where applicable.
 ### Future Development (ill do it when i get time maybe)
 - SMS and Voice Phishing after phone number OSINT
-- Possible commercial GUI (https://studio.firebase.google.com/studio-9890097031)  
+- Spoofing 3rd party instead of DBS itself
+- Adding muraena as a phishing tool instead of coding my own phishing website 💀
+- Possibly using local llm in the case gemini sends "i cant do this because it violates policy"
 and more!
 
 ## Disclaimer
